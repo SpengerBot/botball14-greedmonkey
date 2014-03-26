@@ -1,4 +1,4 @@
-void main()
+void main2()
 {
 	camera_open_at_res(0);
 	display_clear();
