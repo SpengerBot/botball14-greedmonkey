@@ -2,6 +2,9 @@ void start_position();
 void watch_for_cube();
 void go_for_cube();
 void camera_fix();
+void calibrate();
+void cube_is_near();
+
 // Created on Mo März 24 2014
 //Motors
 #define Motor_Left 2
@@ -25,12 +28,48 @@ void camera_fix();
 
 //Camera Channel
 #define Yellow_Channel 0
-int main()
+
+//Motor Werte
+#define up_Motor_up_speed 100
+#define up_Motor_down_speed -30
+
+//Klauen Werte
+int klaue_down = 0;
+int klaue_orange=0;
+int klaue_yellow=0;
+int klaue_start=0;
+
+//start 48500
+//down 58000
+void main()
 {
+	calibrate();
 	enable_servos();
 	start_position();
 	watch_for_cube();
 	go_for_cube();
+	cube_is_near();
+}
+
+void calibrate(){
+	
+	printf("Please press the claibrate Button");
+	set_b_button_text("calibrate");
+	msleep(500);
+	while(!b_button()){}
+	display_clear();
+	printf("calibrating");
+	motor(Motor_Up,up_Motor_down_speed);
+	while(!digital(Button_Up)){}
+	ao();
+	motor(Motor_Up,up_Motor_up_speed);
+	while(digital(Button_Up)){}
+	ao();
+	clear_motor_position_counter(Motor_Up);
+	klaue_down=get_motor_position_counter(Motor_Up);
+	printf("Motor Position: %d", klaue_down);
+	move_to_position(Motor_Up,100,10000);
+	
 }
 
 void start_position(){
@@ -92,7 +131,13 @@ void watch_for_cube(){
 	}
 	printf("Last Col: %d\n",get_object_center(0,0).x);
 	ao();
+	
 }
+void cube_is_near(){
+	camera_fix();
+	//for(get_object_bbox(0,0));
+}
+
 void camera_fix(){
 	double seconds_now=seconds()+3;
 	while(seconds() < seconds_now){
