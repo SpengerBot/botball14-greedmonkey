@@ -2,8 +2,6 @@ void start_position();
 void watch_for_cube();
 void go_for_cube();
 void camera_fix();
-void calibrate();
-
 // Created on Mo März 24 2014
 //Motors
 #define Motor_Left 2
@@ -27,43 +25,12 @@ void calibrate();
 
 //Camera Channel
 #define Yellow_Channel 0
-
-//Klauen Werte
-int klaue_down = 0;
-int klaue_orange=0;
-int klaue_yellow=0;
-int klaue_start=0;
-
-//start 48500
-//down 58000
-void main()
+int main()
 {
-	calibrate();
-	//enable_servos();
-	//start_position();
-	//watch_for_cube();
-	//go_for_cube();
-}
-
-void calibrate(){
-	
-	printf("Please press the claibrate Button");
-	set_b_button_text("calibrate");
-	msleep(500);
-	while(!b_button()){}
-	display_clear();
-	printf("calibrating");
-	motor(Motor_Up,-100);
-	while(!digital(Button_Up)){}
-	ao();
-	motor(Motor_Up,20);
-	while(digital(Button_Up)){}
-	ao();
-	clear_motor_position_counter(Motor_Up);
-	klaue_down=get_motor_position_counter(Motor_Up);
-	printf("Motor Position: %d", klaue_down);
-	move_to_position(Motor_Up,100,10000);
-	
+	enable_servos();
+	start_position();
+	watch_for_cube();
+	go_for_cube();
 }
 
 void start_position(){
