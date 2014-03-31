@@ -14,7 +14,8 @@ void claw_open();
 #define Motor_Left 0
 #define Motor_Right 2
 #define Motor_Up 3
-
+#define Turnspeed 80
+#define Drivespeed 100
 //Servos
 #define	Servo_Left 0
 #define Servo_Right 1
@@ -55,12 +56,13 @@ int klaue_start=0;
 void main()
 {
 	calibrate();
+	camera_open();
 	start_position();
 	take_position();
 	msleep(2000);
-	camera_open();
+	
 	go_for_cube();
-	//cube_is_near();
+	cube_is_near();
 	
 	
 	//motor(Motor_Up,Motor_fast_down_speed);
@@ -106,14 +108,14 @@ void start_position(){
 	msleep(1000);
 	
 	motor(Motor_Up,Motor_up_speed);
-	motor(Motor_Left,-100);
-	motor(Motor_Right,100);
+	motor(Motor_Left,-Turnspeed);
+	motor(Motor_Right,Turnspeed);
 	msleep(800);
 	freeze(Motor_Left);
 	freeze(Motor_Right);
 	msleep(1200);
-	motor(Motor_Left,100);
-	motor(Motor_Right,100);
+	motor(Motor_Left,Drivespeed);
+	motor(Motor_Right,Drivespeed);
 	msleep(1200);
 	freeze(Motor_Left);
 	freeze(Motor_Right);
@@ -123,27 +125,28 @@ void start_position(){
 void take_position()
 {	
 	//zurück 2sec
-	motor(Motor_Left,-100);
-	motor(Motor_Right,-100);
+	motor(Motor_Left,-Drivespeed);
+	motor(Motor_Right,-Drivespeed);
 	msleep(1700);
 	freeze(Motor_Left);
 	freeze(Motor_Right);
 
 	//90°
-	motor(Motor_Left,100);
-	motor(Motor_Right,-100);
-	msleep(800);
+	motor(Motor_Left,Turnspeed);
+	motor(Motor_Right,-Turnspeed);
+	msleep(900);
 	freeze(Motor_Left);
 	freeze(Motor_Right);
-	msleep(2000);
+	camera_fix();
+	printf("nach c_fix");
 
-	motor(Motor_Left,100);
-	motor(Motor_Right,100);
+	motor(Motor_Left,Drivespeed);
+	motor(Motor_Right,Drivespeed);
 	msleep(1500);
 	
-	motor(Motor_Left,100);
-	motor(Motor_Right,-100);
-	msleep(750);
+	motor(Motor_Left,Turnspeed);
+	motor(Motor_Right,-Turnspeed);
+	msleep(850);
 	
 	freeze(Motor_Left);
 	freeze(Motor_Right);
@@ -152,7 +155,7 @@ void take_position()
 }
 void go_for_cube()
 {
-	camera_fix();
+	
 	printf("echo: %d\n",get_object_bbox(0,0).width);
 	claw_open();
 	while(get_object_bbox(0,0).width < 40){
@@ -163,24 +166,31 @@ void go_for_cube()
 			printf("it's right\n");
 			motor(Motor_Left,5);
 			motor(Motor_Right,-5);
+			camera_update();
 		}
 		else if(get_object_center(0,0).x < 50)
 		{
 			printf("it's left\n");
 			motor(Motor_Left,-5);
 			motor(Motor_Right,5);
+			camera_update();
 		}
 		else
 		{
 			printf("drive\n");
 			motor(Motor_Left,5);
 			motor(Motor_Right,5);
+			camera_update();
 		}
+		msleep(300);
+		
 	}
-	motor(Motor_Left,100);
+	/*motor(Motor_Left,100);
 	motor(Motor_Right,100);
 	msleep(500);
 	claw_close();
+	altes testen
+	*/
 }
 void claw_close(){
 	set_servo_position(Servo_Left,Servo_Left_Closed);
@@ -208,8 +218,34 @@ void claw_down(){
 	ao();
 }
 void cube_is_near(){
-	camera_fix();
-	//for(get_object_bbox(0,0));
+	camera_update();
+	printf("cube is near");
+	while(get_object_bbox(0,0).width < 15){
+		camera_update();
+		printf("search: %d\n",get_object_center(0,0).x);
+		if(get_object_center(0,0).x > 110)
+		{
+			printf("it's right\n");
+			motor(Motor_Left,5);
+			motor(Motor_Right,-5);
+			camera_update();
+		}
+		else if(get_object_center(0,0).x < 80)
+		{
+			printf("it's left\n");
+			motor(Motor_Left,-5);
+			motor(Motor_Right,5);
+			camera_update();
+		}
+		else
+		{
+			printf("drive\n");
+			motor(Motor_Left,5);
+			motor(Motor_Right,5);
+			camera_update();
+		}
+		msleep(100);
+	}
 }
 
 void camera_fix(){
