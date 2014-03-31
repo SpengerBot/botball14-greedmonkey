@@ -1,6 +1,5 @@
 void start_position();
 void watch_for_cube();
-void go_for_cube();
 void camera_fix();
 void calibrate();
 void cube_is_near();
@@ -9,6 +8,8 @@ void claw_up();
 void claw_down();
 void claw_close();
 void claw_open();
+void drive_till_line();
+void found_something();
 // Created on Mo März 24 2014
 //Motors
 #define Motor_Left 0
@@ -34,6 +35,9 @@ void claw_open();
 //Sensor + Wert
 #define Sensor_Up 1
 #define Sensor_Up_Value 600
+#define Senor_Line_Left 0
+#define Senor_Line_Right 6
+#define Sensor_Black 700
 
 //Camera Channel
 #define Yellow_Channel 0
@@ -51,6 +55,8 @@ int klaue_orange=0;
 //int klaue_yellow=0;
 int klaue_start=0;
 
+//Findungsprozess
+int funden=0;
 //start 48500
 //down 58000
 void main()
@@ -60,10 +66,9 @@ void main()
 	start_position();
 	take_position();
 	msleep(2000);
-	
-	go_for_cube();
+
 	cube_is_near();
-	
+	calibrate();
 	
 	//motor(Motor_Up,Motor_fast_down_speed);
 	//while(!digital(Button_Up)){}
@@ -148,50 +153,56 @@ void take_position()
 	motor(Motor_Right,-Turnspeed);
 	msleep(850);
 	
+	drive_till_line();
+	
 	freeze(Motor_Left);
 	freeze(Motor_Right);
 	while(analog(Sensor_Up) > Sensor_Up_Value){}
 	freeze(Motor_Up);
-}
-void go_for_cube()
-{
 	
-	printf("echo: %d\n",get_object_bbox(0,0).width);
-	claw_open();
-	while(get_object_bbox(0,0).width < 40){
-		camera_update();
-		printf("search: %d\n",get_object_center(0,0).x);
-		if(get_object_center(0,0).x > 110)
-		{
-			printf("it's right\n");
-			motor(Motor_Left,5);
-			motor(Motor_Right,-5);
-			camera_update();
-		}
-		else if(get_object_center(0,0).x < 50)
-		{
-			printf("it's left\n");
-			motor(Motor_Left,-5);
-			motor(Motor_Right,5);
-			camera_update();
-		}
-		else
-		{
-			printf("drive\n");
-			motor(Motor_Left,5);
-			motor(Motor_Right,5);
-			camera_update();
-		}
-		msleep(300);
-		
-	}
-	/*motor(Motor_Left,100);
-	motor(Motor_Right,100);
-	msleep(500);
-	claw_close();
-	altes testen
-	*/
+	
 }
+void drive_till_line(){
+	int forward=0;
+	while(1){
+		if(analog(Senor_Line_Left)>Sensor_Black&&analog(Senor_Line_Right)>Sensor_Black){
+			printf("Abgehn\n");
+			break;
+		}
+		if(analog(Senor_Line_Left)>Sensor_Black){
+			motor(Motor_Right,0);
+			motor(Motor_Left,0);
+			printf("Links\n");
+			motor(Motor_Right,Turnspeed);
+			msleep(500);
+			while(analog(Senor_Line_Left)<Sensor_Black){}
+			break;
+		}
+		if(analog(Senor_Line_Right)>Sensor_Black){
+			motor(Motor_Right,0);
+			motor(Motor_Left,0);
+			printf("Right\n");
+			motor(Motor_Left,Turnspeed);
+			msleep(500);
+			while(analog(Senor_Line_Right)<Sensor_Black){}
+			break;
+		}
+		else{
+			if(forward==0){
+				motor(Motor_Left,Drivespeed);
+				motor(Motor_Right,Drivespeed);
+				printf("Start\n");
+				forward=1;
+			}	
+		}
+	}
+	motor(Motor_Right,-70);
+	motor(Motor_Left,-70);
+	msleep(1000);
+	motor(Motor_Right,0);
+	motor(Motor_Left,0);
+}
+
 void claw_close(){
 	set_servo_position(Servo_Left,Servo_Left_Closed);
 	set_servo_position(Servo_Right,Servo_Right_Closed);
@@ -220,7 +231,63 @@ void claw_down(){
 void cube_is_near(){
 	camera_update();
 	printf("cube is near");
-	while(get_object_bbox(0,0).width < 15){
+	motor(Motor_Left,0);
+	motor(Motor_Right,0);
+
+	if(get_object_count!=0){
+		printf("gleich gefunden\n");
+		if(get_object_confidence(0,0)>0.3){
+		printf("groß genug");
+		funden=1;
+		found_something();
+		}
+	}
+	double s=seconds();
+	motor(Motor_Left,20);
+	while(funden==0){//nichts gefunden
+		camera_update();
+		printf("nach rechts\n");
+			if(get_object_count!=0){
+								printf("1 gefunden \n");
+				if(get_object_confidence(0,0)>0.3){
+					printf("groß genug");
+				found_something();
+				funden=1;
+				break;
+				}
+			}
+			if(seconds()>s+5){
+				printf("zeit rechts\n");
+				motor(Motor_Left,0);
+				break;
+			}
+		}
+	s=seconds();
+		motor(Motor_Right,20);
+		while(funden==0){
+			camera_update();
+			printf("nach links drehen \n");
+			if(get_object_count!=0){
+				printf("1 gefunden \n");
+				if(get_object_confidence(0,0)>0.3){
+					printf("groß genug");
+					found_something();
+					funden=1;
+					break;
+				}
+			}
+			if(seconds()>s+8){
+				printf("zeit links\n");
+				motor(Motor_Right,0);
+				break;
+			}
+		}
+		printf("fertig");
+	}
+
+void found_something(){
+	
+	while(get_object_confidence(0,0)>0.5){
 		camera_update();
 		printf("search: %d\n",get_object_center(0,0).x);
 		if(get_object_center(0,0).x > 110)
@@ -237,7 +304,7 @@ void cube_is_near(){
 			motor(Motor_Right,5);
 			camera_update();
 		}
-		else
+		else 
 		{
 			printf("drive\n");
 			motor(Motor_Left,5);
@@ -245,9 +312,10 @@ void cube_is_near(){
 			camera_update();
 		}
 		msleep(100);
+	
+		}
+		printf("found beendet");
 	}
-}
-
 void camera_fix(){
 	printf("camerafix\n");
 	//double seconds_now=seconds()+3;
