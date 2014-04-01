@@ -10,10 +10,12 @@ void claw_close();
 void claw_close_without_cube();
 void claw_open();
 void drive_till_line();
+void drive_till_line_backward();
 void found_something();
 void drive_forward();
 void turn_left();
 void turn_right();
+void bringback();
 
 // Created on Mo März 24 2014
 //Motors
@@ -73,7 +75,9 @@ void main()
 	camera_open();
 	take_position();
 	cube_is_near();
+	//end var hier
 	ao();
+	bringback();
 	calibrate();
 }
 
@@ -250,20 +254,20 @@ void cube_is_near(){
 
 	if(get_object_count(0)!=0){
 		printf("gleich gefunden\n");
-		if(get_object_confidence(0,0)>0.3){
+		if(get_object_bbox(0,0).width > 20){
 			printf("groß genug");
 			funden=1;
 			found_something();
 		}
 	}
 	double s=seconds();
-	motor(Motor_Left,20);
+	motor(Motor_Left,30);
 	while(funden==0){//nichts gefunden
 		camera_update();
 		printf("nach rechts\n");
 			if(get_object_count!=0){
 				printf("1 gefunden \n");
-				if(get_object_confidence(0,0)>0.3){
+				if(get_object_bbox(0,0).width > 20){
 					printf("groß genug");
 					found_something();
 					funden=1;
@@ -277,13 +281,13 @@ void cube_is_near(){
 			}
 		}
 		s=seconds();
-		motor(Motor_Right,20);
+		motor(Motor_Right,30);
 		while(funden==0){
 			camera_update();
 			printf("nach links drehen \n");
 			if(get_object_count!=0){
 				printf("1 gefunden \n");
-				if(get_object_confidence(0,0)>0.3){
+				if(get_object_bbox(0,0).width > 20){
 					printf("groß genug");
 					found_something();
 					funden=1;
@@ -293,17 +297,17 @@ void cube_is_near(){
 			if(seconds()>s+8){
 				printf("zeit links\n");
 				freeze(Motor_Right);
+				//program end
 				break;
 			}
 		}
-		printf("fertig");
 	}
 
 void found_something(){
 	ao();
 	camera_fix();
 	claw_open();
-	while(get_object_bbox(0,0).width < 90){
+	while(get_object_bbox(0,0).width < 85){
 		camera_update();
 		if(get_object_center(0,0).x > 120)
 		{
@@ -330,7 +334,57 @@ void found_something(){
 	claw_close();
 	msleep(1000);
 	
+}
+	
+void bringback(){
+	drive_till_line_backward();
+	
+	turn_left(950);
+	drive_forward(11000);
+	drive_backward(500);
+	turn_left(850);
+	msleep(1000);
+	drive_backward(1500);
+	msleep(3000);
+	drive_forward(5000);
+}
+void drive_till_line_backward(){
+	int backward=0;
+	while(1){
+		if(analog(Senor_Line_Left)>Sensor_Black&&analog(Senor_Line_Right)>Sensor_Black){
+			printf("Abgehn\n");
+			break;
+		}
+		if(analog(Senor_Line_Left)>Sensor_Black){
+			freeze(Motor_Right);
+			freeze(Motor_Left);
+			printf("Links\n");
+			motor(Motor_Right,-Drivespeed_slow*4);
+			msleep(50);
+			while(analog(Senor_Line_Right)<Sensor_Black){}
+			break;
+		}
+		if(analog(Senor_Line_Right)>Sensor_Black){
+			freeze(Motor_Right);
+			freeze(Motor_Left);
+			printf("Right\n");
+			motor(Motor_Left,-Drivespeed_slow*4);
+			msleep(50);
+			while(analog(Senor_Line_Left)<Sensor_Black){}
+			break;
+		}
+		else{
+			if(backward==0){
+				motor(Motor_Left,-Drivespeed_slow*4);
+				motor(Motor_Right,-Drivespeed_slow*4);
+				printf("Start\n");
+				backward=1;
+			}	
+		}
 	}
+	freeze(Motor_Left);
+	freeze(Motor_Right);
+}
 void camera_fix(){
 	printf("camerafix\n");
 	//double seconds_now=seconds()+3;
