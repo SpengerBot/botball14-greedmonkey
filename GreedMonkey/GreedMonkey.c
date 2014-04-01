@@ -25,6 +25,7 @@ void bringback();
 #define Turnspeed 80
 #define Drivespeed 100
 #define Drivespeed_slow 5
+#define Drivespeed_middle 40
 //Servos
 #define	Servo_Left 0
 #define Servo_Right 1
@@ -69,6 +70,7 @@ int funden=0;
 //down 58000
 void main()
 {
+
 	enable_servos();
 	calibrate();
 	start_position();
@@ -109,14 +111,13 @@ void start_position(){
 	printf("wait for light oida");
 	set_b_button_text("I am the Twilight");
 	while(!b_button()){}
+	shut_down_in(110);
 	msleep(1000);
 	
 	motor(Motor_Up,Motor_up_speed);
 	turn_left(900);
 	
 	drive_forward(450);
-	//set_servo_position(Servo_Left, Servo_Left_Open);
-	//set_servo_position(Servo_Right, Servo_Right_Open);
 }
 void drive_forward(int delay){
 	motor(Motor_Left,Drivespeed);
@@ -156,14 +157,14 @@ void take_position()
 	drive_backward(1700);
 
 	//90°
-	turn_right(850);
+	turn_right(900);
 	
 	camera_fix();
 	printf("nach c_fix");
 
 	drive_forward(1500);
 	
-	turn_right(850);
+	turn_right(900);
 	
 	drive_till_line();
 	
@@ -311,20 +312,20 @@ void found_something(){
 		camera_update();
 		if(get_object_center(0,0).x > 120)
 		{
-			motor(Motor_Left,Drivespeed_slow);
-			motor(Motor_Right,-Drivespeed_slow);
+			motor(Motor_Left,Drivespeed_middle/2);
+			motor(Motor_Right,-Drivespeed_middle/2);
 			camera_update();
 		}
 		else if(get_object_center(0,0).x < 70)
 		{
-			motor(Motor_Left,-Drivespeed_slow*2);
-			motor(Motor_Right,Drivespeed_slow*2);
+			motor(Motor_Left,-Drivespeed_middle/2);
+			motor(Motor_Right,Drivespeed_middle/2);
 			camera_update();
 		}
 		else 
 		{
-			motor(Motor_Left,Drivespeed_slow);
-			motor(Motor_Right,Drivespeed_slow);
+			motor(Motor_Left,Drivespeed_middle/2);
+			motor(Motor_Right,Drivespeed_middle/2);
 			camera_update();
 		}
 		msleep(50);
@@ -339,14 +340,30 @@ void found_something(){
 void bringback(){
 	drive_till_line_backward();
 	
-	turn_left(950);
-	drive_forward(11000);
-	drive_backward(500);
-	turn_left(850);
+	turn_left(910);
+	motor(Motor_Up,Motor_fast_down_speed);
+	drive_forward(12000);
+	drive_backward(250);
+	turn_left(900);
+
+	while(!digital(Button_Up)){}
+	freeze(Motor_Up);
+	
+	motor(Motor_Left,Drivespeed_middle*2);
+	motor(Motor_Right,Drivespeed_middle*2-3);
+	msleep(6000);
+	freeze(Motor_Left);
+	freeze(Motor_Right);
+	
+	motor(Motor_Left,-1*Drivespeed_middle*2);
+	motor(Motor_Right,-1*Drivespeed_middle*2+3);
 	msleep(1000);
-	drive_backward(1500);
-	msleep(3000);
-	drive_forward(5000);
+	freeze(Motor_Left);
+	freeze(Motor_Right);
+	
+	msleep(2000);
+	claw_open();
+	
 }
 void drive_till_line_backward(){
 	int backward=0;
@@ -359,7 +376,7 @@ void drive_till_line_backward(){
 			freeze(Motor_Right);
 			freeze(Motor_Left);
 			printf("Links\n");
-			motor(Motor_Right,-Drivespeed_slow*4);
+			motor(Motor_Right,-Drivespeed_middle);
 			msleep(50);
 			while(analog(Senor_Line_Right)<Sensor_Black){}
 			break;
@@ -368,15 +385,15 @@ void drive_till_line_backward(){
 			freeze(Motor_Right);
 			freeze(Motor_Left);
 			printf("Right\n");
-			motor(Motor_Left,-Drivespeed_slow*4);
+			motor(Motor_Left,-Drivespeed_middle);
 			msleep(50);
 			while(analog(Senor_Line_Left)<Sensor_Black){}
 			break;
 		}
 		else{
 			if(backward==0){
-				motor(Motor_Left,-Drivespeed_slow*4);
-				motor(Motor_Right,-Drivespeed_slow*4);
+				motor(Motor_Left,-Drivespeed_middle);
+				motor(Motor_Right,-Drivespeed_middle);
 				printf("Start\n");
 				backward=1;
 			}	
