@@ -33,12 +33,11 @@ void bringback2cube();
 #define Servo_Back 3
 
 #define Servo_Back_Up 2000
-#define Servo_Back_Down 0
+#define Servo_Back_Down 300
 #define Servo_Left_Open 600
 #define Servo_Left_Closed 250
 #define Servo_Right_Open 1600
-#define Servo_Right_Closed 2000
-#define Servo_Right_Drop 1850
+#define Servo_Right_Closed 1850
 
 //Button
 #define Button_Up 14
@@ -78,9 +77,13 @@ void main()
 {
 
 	enable_servos();
+	set_servo_position(Servo_Back, Servo_Back_Up);	
 	calibrate();
 	
 	//wait for light
+	//printf("wait for light oida");
+	//set_b_button_text("I am the Twilight");
+	//while(!b_button()){}
 	wait_for_light(Sensor_Light);
 	shut_down_in(115);
 	start=seconds();
@@ -116,15 +119,12 @@ void calibrate(){
 	enable_servos();
 	claw_close();
 	
-	set_servo_position(Servo_Back, Servo_Back_Up);	
+	
 }
 
-void start_position(){
-	msleep(1000);
-	
+void start_position(){	
 	motor(Motor_Up,Motor_up_speed);
 	turn_left(900);
-	
 	drive_forward(450);
 }
 void drive_forward(int delay){
@@ -228,7 +228,7 @@ void claw_close(){
 }
 void claw_drop(){
 	set_servo_position(Servo_Left,Servo_Left_Open);
-	set_servo_position(Servo_Right,Servo_Right_Drop);
+	set_servo_position(Servo_Right,Servo_Right_Closed);
 }
 void claw_open(){
 	set_servo_position(Servo_Left,Servo_Left_Open);
@@ -282,7 +282,7 @@ void cube_is_near(){
 					break;
 				}
 			}
-			if(seconds()>s+4){
+			if(seconds()>s+1){
 				printf("zeit rechts\n");
 				freeze(Motor_Left);
 				break;
@@ -302,7 +302,7 @@ void cube_is_near(){
 					break;
 				}
 			}
-			if(seconds()>s+8){
+			if(seconds()>s+2){
 				printf("zeit links\n");
 				freeze(Motor_Right);
 				break;
@@ -366,25 +366,31 @@ void bringback2cube(){
 	turn_left(950);
 	
 	motor(Motor_Left,Drivespeed_middle*2);
-	motor(Motor_Right,Drivespeed_middle*2-3);
+	motor(Motor_Right,Drivespeed_middle*2-5);
 	msleep(6000);
 	freeze(Motor_Left);
 	freeze(Motor_Right);
 	
 	motor(Motor_Left,-1*Drivespeed_middle*2);
-	motor(Motor_Right,-1*Drivespeed_middle*2+3);
+	motor(Motor_Right,-1*Drivespeed_middle*2+5);
 	msleep(1000);
 	freeze(Motor_Left);
 	freeze(Motor_Right);
+
+
+	while(get_servo_position(Servo_Back) > Servo_Back_Down){
+		set_servo_position(Servo_Back,get_servo_position(Servo_Back)-20);
+		msleep(20);
+	}
 	
 	while(analog(Sensor_Down)>Sensor_Down_Value){
 	if(seconds()>start+113)
-		claw_drop();
+		claw_open();
 	}
 	freeze(Motor_Up);
 	
 	msleep(2000);
-	claw_drop();
+	claw_open();
 }
 void bringback(){
 	drive_till_line_backward();
@@ -404,23 +410,29 @@ void bringback(){
 
 	
 	motor(Motor_Left,Drivespeed_middle*2);
-	motor(Motor_Right,Drivespeed_middle*2-3);
+	motor(Motor_Right,Drivespeed_middle*2-5);
 	msleep(6000);
 	freeze(Motor_Left);
 	freeze(Motor_Right);
 	
 	motor(Motor_Left,-1*Drivespeed_middle*2);
-	motor(Motor_Right,-1*Drivespeed_middle*2+3);
+	motor(Motor_Right,-1*Drivespeed_middle*2+5);
 	msleep(1000);
 	freeze(Motor_Left);
 	freeze(Motor_Right);
+	
+	while(get_servo_position(Servo_Back) > Servo_Back_Down){
+		set_servo_position(Servo_Back,get_servo_position(Servo_Back)-20);
+		msleep(20);
+	}
 	
 	while(analog(Sensor_Down)>Sensor_Down_Value){}
 	freeze(Motor_Up);
 	
 	msleep(2000);
-	claw_drop();
-	
+	claw_open();
+	msleep(2000);
+	set_servo_position(Servo_Back,Servo_Back_Up);
 }
 void drive_till_line_backward(){
 	int backward=0;
