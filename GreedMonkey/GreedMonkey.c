@@ -51,8 +51,7 @@ void bringback2cube();
 #define Sensor_Black 700
 #define Sensor_Down 7
 #define Sensor_Down_Value 800
-#define Sensor_Light 2
-#define Sensor_Light_on 950
+#define Sensor_Light 3 //Test Sensor = 3  Real Sensor = 2
 
 //Camera Channel
 #define Yellow_Channel 0
@@ -82,9 +81,7 @@ void main()
 	calibrate();
 	
 	//wait for light
-	printf("wait for light oida");
-	set_b_button_text("I am the Twilight");
-	while(!b_button()){}
+	wait_for_light(Sensor_Light);
 	shut_down_in(115);
 	start=seconds();
 	
