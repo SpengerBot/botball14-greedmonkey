@@ -158,24 +158,24 @@ void drive_till_line(){
 	motor(Motor_Right,Drivespeed);
 	printf("Start\n");
 	while(1){
-		if(analog(Senor_Line_Left)>Sensor_Black&&analog(Senor_Line_Right)>Sensor_Black){
+		if(analog(Sensor_Line_Left)>Sensor_Black&&analog(Sensor_Line_Right)>Sensor_Black){
 			printf("Abgehn\n");
 			break;
 		} 
-		if(analog(Senor_Line_Left)>Sensor_Black) {
+		if(analog(Sensor_Line_Left)>Sensor_Black) {
 			freeze(Motor_Left);
 			printf("Links\n");
 			motor(Motor_Right,Turnspeed);
 			msleep(50);
-			while(analog(Senor_Line_Right)<Sensor_Black){}
+			while(analog(Sensor_Line_Right)<Sensor_Black){}
 			break;
 		}
-		if(analog(Senor_Line_Right)>Sensor_Black) {
+		if(analog(Sensor_Line_Right)>Sensor_Black) {
 			freeze(Motor_Right);
 			printf("Right\n");
 			motor(Motor_Left,Turnspeed);
 			msleep(50);
-			while(analog(Senor_Line_Left)<Sensor_Black){}
+			while(analog(Sensor_Line_Left)<Sensor_Black){}
 			break;
 		}
 	}
@@ -432,26 +432,26 @@ void drive_till_line_backward(){
 	motor(Motor_Right,-Drivespeed_middle);			
 	printf("Start\n");
 	while(1){
-		if(analog(Senor_Line_Left)>Sensor_Black&&analog(Senor_Line_Right)>Sensor_Black){
+		if(analog(Sensor_Line_Left)>Sensor_Black&&analog(Sensor_Line_Right)>Sensor_Black){
 			printf("Abgehn\n");
 			break;
 		}
-		if(analog(Senor_Line_Left)>Sensor_Black){
+		if(analog(Sensor_Line_Left)>Sensor_Black){
 			freeze(Motor_Right);
 			freeze(Motor_Left);
 			printf("Links\n");
 			motor(Motor_Right,-Drivespeed_middle);
 			msleep(50);
-			while(analog(Senor_Line_Right)<Sensor_Black){}
+			while(analog(Sensor_Line_Right)<Sensor_Black){}
 			break;
 		}
-		if(analog(Senor_Line_Right)>Sensor_Black){
+		if(analog(Sensor_Line_Right)>Sensor_Black){
 			freeze(Motor_Right);
 			freeze(Motor_Left);
 			printf("Right\n");
 			motor(Motor_Left,-Drivespeed_middle);
 			msleep(50);
-			while(analog(Senor_Line_Left)<Sensor_Black){}
+			while(analog(Sensor_Line_Left)<Sensor_Black){}
 			break;
 		}
 	}
