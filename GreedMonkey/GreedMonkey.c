@@ -31,12 +31,12 @@ void bringback2cube();
 #define Servo_Right 1
 #define Servo_Back 3
 
-#define Servo_Back_Up 1100
+#define Servo_Back_Up 1450
 #define Servo_Back_Down 10
 #define Servo_Left_Open 1550
-#define Servo_Left_Closed 960
+#define Servo_Left_Closed 860
 #define Servo_Right_Open 960
-#define Servo_Right_Closed 1400
+#define Servo_Right_Closed 1500
 //Button
 #define Button_Up 14
 
@@ -369,9 +369,9 @@ void bringback2cube(){
 	//turn more than 90 lulz
 	drive(975,-Turnspeed,Turnspeed);
 	//light left and shit
-	drive(6000,Drivespeed_middle*2,Drivespeed_middle*2-5);
+	drive(6000,Drivespeed_middle*2,(Drivespeed_middle*2)-7);
 	//light back and shit
-	drive(1000,-1*Drivespeed_middle*2,-1*Drivespeed_middle*2+5);
+	drive(1000,-1*Drivespeed_middle*2,(-1*Drivespeed_middle*2)+5);
 	//put your bots up in the air
 	while(get_servo_position(Servo_Back) > Servo_Back_Down){
 		set_servo_position(Servo_Back,get_servo_position(Servo_Back)-10);
@@ -401,19 +401,21 @@ void bringback(){
 	motor(Motor_Up,Motor_down_speed);
 	
 	//gerade but leicht links so it twerks
-	drive(11000,Drivespeed*2-1,Drivespeed*2);
+	drive(10000,Drivespeed-1,Drivespeed);
+	
+	drive(3000,Drivespeed_middle,Drivespeed_middle);
 	
 	//back
 	drive(250,-Drivespeed,-Drivespeed);
 	
 	//turn more than left 90
-	drive(975,-Turnspeed,Turnspeed);
+	drive(970,-Turnspeed,Turnspeed);
 	
 	//leicht rechts to calibrate
-	drive(5000,Drivespeed_middle*2,Drivespeed_middle*2-6);
+	drive(5000,Drivespeed_middle*2,(Drivespeed_middle*2)-7);
 	
 	//leicht back rechts to calibrate && würfel fit in tube
-	drive(1000,-Drivespeed_middle*2,-Drivespeed_middle*2+6);
+	drive(1000,-Drivespeed_middle*2,(-Drivespeed_middle*2)+7);
 	
 	//put the bot up in the air
 	while(get_servo_position(Servo_Back) > Servo_Back_Down){
