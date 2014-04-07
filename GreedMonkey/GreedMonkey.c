@@ -32,17 +32,17 @@ void bringback2cube();
 #define Servo_Back_Up 1450
 #define Servo_Back_Down 10
 #define Servo_Left_Open 1550
-#define Servo_Left_Closed 860
+#define Servo_Left_Closed 970
 #define Servo_Right_Open 960
-#define Servo_Right_Closed 1500
+#define Servo_Right_Closed 1390
 //Button
 #define Button_Up 14
 
 //Sensor + Wert
 #define Sensor_Up 1
 #define Sensor_Up_Value 700
-#define Senor_Line_Left 0
-#define Senor_Line_Right 6
+#define Sensor_Line_Left 0
+#define Sensor_Line_Right 6
 #define Sensor_Black 900
 #define Sensor_Down 7
 #define Sensor_Down_Value 650
@@ -373,16 +373,26 @@ void bringback(){
 	drive_till_line_backward();
 	
 	//vor damit nicht insert into create
-	drive(700,Drivespeed_middle,Drivespeed_middle);
+	drive(1200,Drivespeed_middle,Drivespeed_middle);
 	
 	//turn left 90
-	drive(1100,-1*Drivespeed_middle-20,Drivespeed_middle+20);
+	//drive(1100,-1*Drivespeed_middle-20,Drivespeed_middle+20);
+	
+    motor(Motor_Left,-Drivespeed_middle*2);
+    while(analog(Sensor_Line_Left) < Sensor_Black){
+    printf("wait for black: %d\n",analog(Sensor_Line_Left));
+    }
+    msleep(400);
+    while(analog(Sensor_Line_Left) > Sensor_Black){
+    printf("wait for white: %d\n",analog(Sensor_Line_Left));}
+    msleep(400);
+    freeze(Motor_Left);
 	
 	//start claw down
 	motor(Motor_Up,Motor_down_speed);
 	
 	//gerade but leicht links so it twerks
-	drive(10000,Drivespeed-1,Drivespeed);
+	drive(10000,Drivespeed,Drivespeed);
 	
 	drive(3000,Drivespeed_middle,Drivespeed_middle);
 	
