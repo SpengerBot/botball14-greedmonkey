@@ -1,4 +1,3 @@
-
 void start_position();
 void watch_for_cube();
 void calibrate();
@@ -17,7 +16,6 @@ void drive();
 void bringback();
 void bringback2cube();
 
-// Created on Mo März 24 2014
 //Motors
 #define Motor_Left 0
 #define Motor_Right 2
@@ -85,7 +83,7 @@ void main()
 	//wait_for_light(Sensor_Light);
 	
 	//shutdown stuff
-	shut_down_in(117);
+	shut_down_in(115);
 	start=seconds();
 	
 	//start position for create
@@ -110,11 +108,9 @@ void main()
 void calibrate(){
 	printf("Please press the claibrate Button");
 	set_b_button_text("calibrate");
-	msleep(500);
 	while(!b_button()){}
 	display_clear();
 	printf("calibrating");
-	
 	//claws down
 	motor(Motor_Up,Motor_down_speed);
 	while(analog(Sensor_Down)> Sensor_Down_Value){}
@@ -125,9 +121,7 @@ void calibrate(){
 	motor(Motor_Up,Motor_up_speed);
 	while(analog(Sensor_Down)< Sensor_Down_Value){}
 	freeze(Motor_Up);
-	
-	enable_servos();
-	claw_close();	
+	claw_close();
 }
 
 void start_position(){	
@@ -146,8 +140,7 @@ void drive(int delay,int speed_left, int speed_right){
 	freeze(Motor_Right);
 	msleep(200);
 }
-void take_position()
-{	
+void take_position() {	
 	//zurück 2sec
 	drive(1700,-Drivespeed,-Drivespeed);
 	//90 nach rechts
@@ -161,37 +154,27 @@ void take_position()
 	drive_till_line();
 }
 void drive_till_line(){
-	int forward=0;
+	motor(Motor_Left,Drivespeed);
+	motor(Motor_Right,Drivespeed);
+	printf("Start\n");
 	while(1){
 		if(analog(Senor_Line_Left)>Sensor_Black&&analog(Senor_Line_Right)>Sensor_Black){
 			printf("Abgehn\n");
 			break;
-		}
-		if(analog(Senor_Line_Left)>Sensor_Black){
-			freeze(Motor_Right);
+		} else if(analog(Senor_Line_Left)>Sensor_Black) {
 			freeze(Motor_Left);
 			printf("Links\n");
 			motor(Motor_Right,Turnspeed);
 			msleep(50);
 			while(analog(Senor_Line_Right)<Sensor_Black){}
 			break;
-		}
-		if(analog(Senor_Line_Right)>Sensor_Black){
+		} else if(analog(Senor_Line_Right)>Sensor_Black) {
 			freeze(Motor_Right);
-			freeze(Motor_Left);
 			printf("Right\n");
 			motor(Motor_Left,Turnspeed);
 			msleep(50);
 			while(analog(Senor_Line_Left)<Sensor_Black){}
 			break;
-		}
-		else{
-			if(forward==0){
-				motor(Motor_Left,Drivespeed);
-				motor(Motor_Right,Drivespeed);
-				printf("Start\n");
-				forward=1;
-			}	
 		}
 	}
 	freeze(Motor_Left);
@@ -313,15 +296,11 @@ void found_something(){
 			motor(Motor_Left,Drivespeed_middle/2);
 			motor(Motor_Right,-Drivespeed_middle/2);
 			camera_update();
-		}
-		else if(get_object_center(0,0).x < 70)
-		{
+		} else if(get_object_center(0,0).x < 70) {
 			motor(Motor_Left,-Drivespeed_middle/2);
 			motor(Motor_Right,Drivespeed_middle/2);
 			camera_update();
-		}
-		else 
-		{
+		} else {
 			motor(Motor_Left,Drivespeed_middle/2);
 			motor(Motor_Right,Drivespeed_middle/2);
 			camera_update();
@@ -379,7 +358,7 @@ void bringback2cube(){
 	}
 	//wait for claw down
 	while(analog(Sensor_Down)>Sensor_Down_Value){
-		if(seconds()>start+113){
+		if(seconds()>start+111){
 			claw_open();
 		}
 	}
@@ -437,13 +416,14 @@ void bringback(){
 	}
 }
 void drive_till_line_backward(){
-	int backward=0;
+	motor(Motor_Left,-Drivespeed_middle);
+	motor(Motor_Right,-Drivespeed_middle);			
+	printf("Start\n");
 	while(1){
 		if(analog(Senor_Line_Left)>Sensor_Black&&analog(Senor_Line_Right)>Sensor_Black){
 			printf("Abgehn\n");
 			break;
-		}
-		if(analog(Senor_Line_Left)>Sensor_Black){
+		} else if(analog(Senor_Line_Left)>Sensor_Black){
 			freeze(Motor_Right);
 			freeze(Motor_Left);
 			printf("Links\n");
@@ -451,8 +431,7 @@ void drive_till_line_backward(){
 			msleep(50);
 			while(analog(Senor_Line_Right)<Sensor_Black){}
 			break;
-		}
-		if(analog(Senor_Line_Right)>Sensor_Black){
+		} else if(analog(Senor_Line_Right)>Sensor_Black){
 			freeze(Motor_Right);
 			freeze(Motor_Left);
 			printf("Right\n");
@@ -461,19 +440,7 @@ void drive_till_line_backward(){
 			while(analog(Senor_Line_Left)<Sensor_Black){}
 			break;
 		}
-		else{
-			if(backward==0){
-				motor(Motor_Left,-Drivespeed_middle);
-				motor(Motor_Right,-Drivespeed_middle);
-				printf("Start\n");
-				backward=1;
-			}	
-		}
 	}
 	freeze(Motor_Left);
 	freeze(Motor_Right);
 }
-
-
-
-
