@@ -161,14 +161,16 @@ void drive_till_line(){
 		if(analog(Senor_Line_Left)>Sensor_Black&&analog(Senor_Line_Right)>Sensor_Black){
 			printf("Abgehn\n");
 			break;
-		} else if(analog(Senor_Line_Left)>Sensor_Black) {
+		} 
+		if(analog(Senor_Line_Left)>Sensor_Black) {
 			freeze(Motor_Left);
 			printf("Links\n");
 			motor(Motor_Right,Turnspeed);
 			msleep(50);
 			while(analog(Senor_Line_Right)<Sensor_Black){}
 			break;
-		} else if(analog(Senor_Line_Right)>Sensor_Black) {
+		}
+		if(analog(Senor_Line_Right)>Sensor_Black) {
 			freeze(Motor_Right);
 			printf("Right\n");
 			motor(Motor_Left,Turnspeed);
@@ -423,7 +425,8 @@ void drive_till_line_backward(){
 		if(analog(Senor_Line_Left)>Sensor_Black&&analog(Senor_Line_Right)>Sensor_Black){
 			printf("Abgehn\n");
 			break;
-		} else if(analog(Senor_Line_Left)>Sensor_Black){
+		}
+		if(analog(Senor_Line_Left)>Sensor_Black){
 			freeze(Motor_Right);
 			freeze(Motor_Left);
 			printf("Links\n");
@@ -431,7 +434,8 @@ void drive_till_line_backward(){
 			msleep(50);
 			while(analog(Senor_Line_Right)<Sensor_Black){}
 			break;
-		} else if(analog(Senor_Line_Right)>Sensor_Black){
+		}
+		if(analog(Senor_Line_Right)>Sensor_Black){
 			freeze(Motor_Right);
 			freeze(Motor_Left);
 			printf("Right\n");
