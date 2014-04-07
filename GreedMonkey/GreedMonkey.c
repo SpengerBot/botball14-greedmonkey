@@ -29,7 +29,7 @@ void bringback2cube();
 #define Servo_Right 1
 #define Servo_Back 3
 
-#define Servo_Back_Up 1450
+#define Servo_Back_Up 1800
 #define Servo_Back_Down 10
 #define Servo_Left_Open 1550
 #define Servo_Left_Closed 970
@@ -71,8 +71,11 @@ double start=0;
 //down 58000
 void main()
 {
-
+	set_servo_position(Servo_Back,Servo_Back_Up);
+	set_servo_position(Servo_Left,Servo_Left_Closed);
+	set_servo_position(Servo_Right,Servo_Right_Closed);
 	enable_servos();
+	
 	set_servo_position(Servo_Back, Servo_Back_Up);	
 	calibrate();
 	
@@ -291,7 +294,7 @@ void found_something(){
 	msleep(100);
 	camera_update();
 	msleep(100);
-	while(get_object_bbox(0,0).width < 85){
+	while(get_object_bbox(0,0).width < 80){
 		camera_update();
 		if(get_object_center(0,0).x > 120)
 		{
@@ -307,7 +310,7 @@ void found_something(){
 			motor(Motor_Right,Drivespeed_middle/2);
 			camera_update();
 		}
-		msleep(10);
+		msleep(5);
 	}
 	freeze(Motor_Left);
 	freeze(Motor_Right);
@@ -344,20 +347,15 @@ void bringback2cube(){
 	//start to down motor
 	motor(Motor_Up,Motor_down_speed);
 	//vor to calibrate
-	drive(4000,Drivespeed_middle,Drivespeed_middle);
+	drive(2000,Drivespeed,Drivespeed);
 	//back
-	drive(250,-Drivespeed,-Drivespeed);
+	drive(300,-Drivespeed,-Drivespeed);
 	//turn more than 90 lulz
 	drive(975,-Turnspeed,Turnspeed);
 	//light left and shit
-	drive(6000,Drivespeed_middle*2,(Drivespeed_middle*2)-7);
+	drive(5000,Drivespeed_middle*2,(Drivespeed_middle*2)-7);
 	//light back and shit
-	drive(1000,-1*Drivespeed_middle*2,(-1*Drivespeed_middle*2)+5);
-	//put your bots up in the air
-	while(get_servo_position(Servo_Back) > Servo_Back_Down){
-		set_servo_position(Servo_Back,get_servo_position(Servo_Back)-10);
-		msleep(20);
-	}
+	drive(800,-1*Drivespeed_middle*2,(-1*Drivespeed_middle*2)+7);
 	//wait for claw down
 	while(analog(Sensor_Down)>Sensor_Down_Value){
 		if(seconds()>start+111){
@@ -385,19 +383,20 @@ void bringback(){
     msleep(400);
     while(analog(Sensor_Line_Left) > Sensor_Black){
     printf("wait for white: %d\n",analog(Sensor_Line_Left));}
-    msleep(400);
+    msleep(390);
     freeze(Motor_Left);
 	
 	//start claw down
 	motor(Motor_Up,Motor_down_speed);
 	
 	//gerade but leicht links so it twerks
-	drive(10000,Drivespeed,Drivespeed);
+	drive(8000,Drivespeed,Drivespeed);
 	
-	drive(3000,Drivespeed_middle,Drivespeed_middle);
+	//vor to calibrate
+	drive(3000,Drivespeed_middle+20,Drivespeed_middle+20);
 	
 	//back
-	drive(250,-Drivespeed,-Drivespeed);
+	drive(300,-Drivespeed,-Drivespeed);
 	
 	//turn more than left 90
 	drive(970,-Turnspeed,Turnspeed);
@@ -406,13 +405,7 @@ void bringback(){
 	drive(5000,Drivespeed_middle*2,(Drivespeed_middle*2)-7);
 	
 	//leicht back rechts to calibrate && würfel fit in tube
-	drive(1000,-Drivespeed_middle*2,(-Drivespeed_middle*2)+7);
-	
-	//put the bot up in the air
-	while(get_servo_position(Servo_Back) > Servo_Back_Down){
-		set_servo_position(Servo_Back,get_servo_position(Servo_Back)-10);
-		msleep(20);
-	}
+	drive(800,-Drivespeed_middle*2,(-Drivespeed_middle*2)+7);
 	
 	//wait for claw down
 	while(analog(Sensor_Down)>Sensor_Down_Value){}
@@ -421,11 +414,6 @@ void bringback(){
 	msleep(2000);
 	claw_open();
 	msleep(2000);
-	
-	while(get_servo_position(Servo_Back) < Servo_Back_Up){
-		set_servo_position(Servo_Back,get_servo_position(Servo_Back)+10);
-		msleep(20);
-	}
 }
 void drive_till_line_backward(){
 	motor(Motor_Left,-Drivespeed_middle);
