@@ -4,7 +4,7 @@ void calibrate();
 void cube_is_near();
 void take_position();
 void claw_up();
-void claw_littlebit_up();
+void claw_up_delayed();
 void claw_down();
 void claw_close();
 void claw_drop();
@@ -39,12 +39,12 @@ void bringback2cube();
 #define Button_Up 14
 
 //Sensor + Wert
-#define Sensor_Up 1
-#define Sensor_Up_Value 700
+#define Sensor_Up 14
+//#define Sensor_Up_Value 700
 #define Sensor_Line_Left 0
 #define Sensor_Line_Right 6
 #define Sensor_Black 900
-#define Sensor_Down 7
+#define Sensor_Down 13
 #define Sensor_Down_Value 650
 #define Sensor_Light 2 //Test Sensor = 3  Real Sensor = 2
 
@@ -84,7 +84,7 @@ void main()
 	//while(!b_button()){}
 	wait_for_light(Sensor_Light);
 	
-	msleep(500);
+	msleep(1500);
 	//shutdown stuff
 	shut_down_in(115);
 	start=seconds();
@@ -116,13 +116,13 @@ void calibrate(){
 	printf("calibrating");
 	//claws down
 	motor(Motor_Up,Motor_down_speed);
-	while(analog(Sensor_Down)> Sensor_Down_Value){}
+	while(!digital(Sensor_Down)){}
 	freeze(Motor_Up);
 	//wait so it doesn't fuck up
 	msleep(500);
 	//up for straffes seil
 	motor(Motor_Up,Motor_up_speed);
-	while(analog(Sensor_Down)< Sensor_Down_Value){}
+	while(digital(Sensor_Down)){}
 	freeze(Motor_Up);
 	claw_close();
 }
@@ -131,12 +131,12 @@ void start_position(){
 	//start taking claws up
 	motor(Motor_Up,Motor_up_speed);
 	//90 links
-	drive(990,-Turnspeed,Turnspeed);
+	drive(970,-Turnspeed,Turnspeed);
 	//gegen wand für kalibration
-	drive(450,Drivespeed,Drivespeed);
+	drive(430,Drivespeed,Drivespeed);
 }
 void drive(int delay,int speed_left, int speed_right){
-	motor(Motor_Left,speed_left);
+	motor(Motor_Left,speed_left+5);
 	motor(Motor_Right,speed_right);
 	msleep(delay);
 	freeze(Motor_Left);
@@ -147,13 +147,13 @@ void take_position() {
 	//zurück 2sec
 	drive(1700,-Drivespeed,-Drivespeed);
 	//90 nach rechts
-	drive(990,Turnspeed,-Turnspeed);
+	drive(950,Turnspeed,-Turnspeed);
 	//camera fix
 	camera_update();
 	//oida drive
 	drive(1500,Drivespeed,Drivespeed);
 	//90 nach rechts
-	drive(990,Turnspeed,-Turnspeed);
+	drive(950,Turnspeed,-Turnspeed);
 	drive_till_line();
 }
 void drive_till_line(){
@@ -188,17 +188,11 @@ void drive_till_line(){
 	msleep(500);
 	drive(500,-Drivespeed_middle,-Drivespeed_middle);
 	
-	while(analog(Sensor_Up) > Sensor_Up_Value){}
-	freeze(Motor_Up);
-	
+	claw_up_delayed();
 }
 
 void claw_close(){
 	set_servo_position(Servo_Left,Servo_Left_Closed);
-	set_servo_position(Servo_Right,Servo_Right_Closed);
-}
-void claw_drop(){
-	set_servo_position(Servo_Left,Servo_Left_Open);
 	set_servo_position(Servo_Right,Servo_Right_Closed);
 }
 void claw_open(){
@@ -207,7 +201,13 @@ void claw_open(){
 }
 void claw_up(){
 	motor(Motor_Up,Motor_up_speed);
-	while(analog(Sensor_Up) > Sensor_Up_Value){}
+	while(!digital(Sensor_Up)){}
+	freeze(Motor_Up);
+}
+void claw_up_delayed(){
+	while(!digital(Sensor_Up)){}
+	motor(Motor_Up,Motor_down_speed);
+	msleep(1500);
 	freeze(Motor_Up);
 }
 void claw_littlebit_up(){
@@ -218,13 +218,13 @@ void claw_littlebit_up(){
 }
 void claw_down(){
 	motor(Motor_Up,Motor_down_speed);
-	while(analog(Sensor_Down)>Sensor_Down_Value){}
+	while(!digital(Sensor_Down)){}
 	freeze(Motor_Up);
 	//wait so it doesn't fuck up
 	msleep(500);
 	//up for straffes seil
 	motor(Motor_Up,Motor_up_speed);
-	while(analog(Sensor_Down)< Sensor_Down_Value){}
+	while(!digital(Sensor_Down)){}
 	freeze(Motor_Up);
 }
 void cube_is_near(){
@@ -316,7 +316,7 @@ void found_something(){
 	freeze(Motor_Right);
 	claw_close();
 	msleep(1000);
-	claw_littlebit_up();
+	claw_up();
 }
 void bringback2cube(){
 	//claw up
@@ -324,17 +324,17 @@ void bringback2cube(){
 	//zurück 1s 
 	drive(1000,-Drivespeed,-Drivespeed);
 	//turn right 90
-	drive(990,Turnspeed,-Turnspeed);
+	drive(970,Turnspeed,-Turnspeed);
 	//vor to calibrate
 	drive(1000,Drivespeed,Drivespeed);
 	//back
 	drive(500,-Drivespeed,-Drivespeed);
 	//turn so little bit b4 cubes
-	drive(1250,Turnspeed,-Turnspeed);
+	drive(1230,Turnspeed,-Turnspeed);
 	//vor
 	drive(900,Drivespeed,Drivespeed);
 	//wait for claw up
-	while(analog(Sensor_Up) > Sensor_Up_Value){}
+	while(!digital(Sensor_Up)){}
 	freeze(Motor_Up);
 	//camera fix
 	camera_update();
@@ -343,21 +343,21 @@ void bringback2cube(){
 	//back
 	drive(1000,-Drivespeed,-Drivespeed);
 	//turn left more than 90 idk
-	drive(1350,-Turnspeed,Turnspeed);
+	drive(1330,-Turnspeed,Turnspeed);
 	//start to down motor
 	motor(Motor_Up,Motor_down_speed);
 	//vor to calibrate
 	drive(2000,Drivespeed,Drivespeed);
 	//back
-	drive(300,-Drivespeed,-Drivespeed);
+	drive(400,-Drivespeed,-Drivespeed);
 	//turn more than 90 lulz
-	drive(975,-Turnspeed,Turnspeed);
+	drive(980,-Turnspeed,Turnspeed);
 	//light left and shit
 	drive(5000,Drivespeed_middle*2,(Drivespeed_middle*2)-7);
 	//light back and shit
 	drive(800,-1*Drivespeed_middle*2,(-1*Drivespeed_middle*2)+7);
 	//wait for claw down
-	while(analog(Sensor_Down)>Sensor_Down_Value){
+	while(!digital(Sensor_Down)){
 		if(seconds()>start+111){
 			claw_open();
 		}
@@ -380,7 +380,7 @@ void bringback(){
     while(analog(Sensor_Line_Left) < Sensor_Black){}
     msleep(400);
     while(analog(Sensor_Line_Left) > Sensor_Black){}
-    msleep(200);
+    msleep(155);
     freeze(Motor_Left);
 	
 	//start claw down
@@ -390,22 +390,22 @@ void bringback(){
 	drive(8000,Drivespeed,Drivespeed);
 	
 	//vor to calibrate
-	drive(3000,Drivespeed_middle+20,Drivespeed_middle+20);
+	drive(5000,Drivespeed_middle+20,Drivespeed_middle+20);
 	
 	//back
-	drive(300,-Drivespeed,-Drivespeed);
+	drive(400,-Drivespeed,-Drivespeed);
 	
 	//turn more than left 90
-	drive(970,-Turnspeed,Turnspeed);
+	drive(980,-Turnspeed,Turnspeed);
 	
 	//leicht rechts to calibrate
-	drive(5000,Drivespeed_middle*2,(Drivespeed_middle*2)-7);
+	drive(4000,Drivespeed_middle*2,(Drivespeed_middle*2)-7);
 	
 	//leicht back rechts to calibrate && würfel fit in tube
 	drive(800,-Drivespeed_middle*2,(-Drivespeed_middle*2)+7);
 	
 	//wait for claw down
-	while(analog(Sensor_Down)>Sensor_Down_Value){}
+	while(!digital(Sensor_Down)){}
 	freeze(Motor_Up);
 	
 	msleep(2000);
