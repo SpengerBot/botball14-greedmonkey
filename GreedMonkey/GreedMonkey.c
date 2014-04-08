@@ -76,7 +76,6 @@ void main()
 	set_servo_position(Servo_Right,Servo_Right_Closed);
 	enable_servos();
 	
-	set_servo_position(Servo_Back, Servo_Back_Up);	
 	calibrate();
 	
 	//wait for light
