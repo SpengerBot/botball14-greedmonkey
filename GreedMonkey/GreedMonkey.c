@@ -80,11 +80,12 @@ void main()
 	calibrate();
 	
 	//wait for light
-	printf("wait for light oida");
-	set_b_button_text("I am the Twilight");
-	while(!b_button()){}
-	//wait_for_light(Sensor_Light);
+	//printf("wait for light oida");
+	//set_b_button_text("I am the Twilight");
+	//while(!b_button()){}
+	wait_for_light(Sensor_Light);
 	
+	msleep(500);
 	//shutdown stuff
 	shut_down_in(115);
 	start=seconds();
@@ -330,7 +331,7 @@ void bringback2cube(){
 	//back
 	drive(500,-Drivespeed,-Drivespeed);
 	//turn so little bit b4 cubes
-	drive(1350,Turnspeed,-Turnspeed);
+	drive(1250,Turnspeed,-Turnspeed);
 	//vor
 	drive(900,Drivespeed,Drivespeed);
 	//wait for claw up
@@ -377,13 +378,10 @@ void bringback(){
 	//drive(1100,-1*Drivespeed_middle-20,Drivespeed_middle+20);
 	
     motor(Motor_Left,-Drivespeed_middle*2);
-    while(analog(Sensor_Line_Left) < Sensor_Black){
-    printf("wait for black: %d\n",analog(Sensor_Line_Left));
-    }
+    while(analog(Sensor_Line_Left) < Sensor_Black){}
     msleep(400);
-    while(analog(Sensor_Line_Left) > Sensor_Black){
-    printf("wait for white: %d\n",analog(Sensor_Line_Left));}
-    msleep(390);
+    while(analog(Sensor_Line_Left) > Sensor_Black){}
+    msleep(200);
     freeze(Motor_Left);
 	
 	//start claw down
