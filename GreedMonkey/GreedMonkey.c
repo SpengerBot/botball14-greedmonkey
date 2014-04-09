@@ -84,7 +84,7 @@ void main()
 	//while(!b_button()){}
 	wait_for_light(Sensor_Light);
 	
-	msleep(1500);
+
 	//shutdown stuff
 	shut_down_in(115);
 	start=seconds();
@@ -151,7 +151,7 @@ void take_position() {
 	//camera fix
 	camera_update();
 	//oida drive
-	drive(1500,Drivespeed,Drivespeed);
+	drive(2000,Drivespeed,Drivespeed);
 	//90 nach rechts
 	drive(950,Turnspeed,-Turnspeed);
 	drive_till_line();
@@ -192,10 +192,12 @@ void drive_till_line(){
 }
 
 void claw_close(){
+	enable_servos();
 	set_servo_position(Servo_Left,Servo_Left_Closed);
 	set_servo_position(Servo_Right,Servo_Right_Closed);
 }
 void claw_open(){
+	enable_servos();
 	set_servo_position(Servo_Left,Servo_Left_Open);
 	set_servo_position(Servo_Right,Servo_Right_Open);
 }
@@ -207,7 +209,7 @@ void claw_up(){
 void claw_up_delayed(){
 	while(!digital(Sensor_Up)){}
 	motor(Motor_Up,Motor_down_speed);
-	msleep(1500);
+	msleep(2500);
 	freeze(Motor_Up);
 }
 void claw_littlebit_up(){
@@ -231,6 +233,7 @@ void cube_is_near(){
 	camera_update();
 	msleep(500);
 	camera_update();
+	enable_servos();
 	claw_open();
 	printf("cube is near");
 	freeze(Motor_Left);
@@ -334,8 +337,7 @@ void bringback2cube(){
 	//vor
 	drive(900,Drivespeed,Drivespeed);
 	//wait for claw up
-	while(!digital(Sensor_Up)){}
-	freeze(Motor_Up);
+	claw_up_delayed();
 	//camera fix
 	camera_update();
 	//hide your cubes
@@ -387,7 +389,7 @@ void bringback(){
 	motor(Motor_Up,Motor_down_speed);
 	
 	//gerade but leicht links so it twerks
-	drive(8000,Drivespeed,Drivespeed);
+	drive(9000,Drivespeed,Drivespeed);
 	
 	//vor to calibrate
 	drive(5000,Drivespeed_middle+20,Drivespeed_middle+20);
