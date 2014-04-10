@@ -78,11 +78,7 @@ void main()
 	
 	calibrate();
 	
-	//wait for light
-	//printf("wait for light oida");
-	//set_b_button_text("I am the Twilight");
-	//while(!b_button()){}
-	wait_for_light(Sensor_Light);
+	wait_for_light_save(Sensor_Light);
 	
 
 	//shutdown stuff
