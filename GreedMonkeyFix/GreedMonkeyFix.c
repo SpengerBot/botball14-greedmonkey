@@ -15,6 +15,7 @@ void found_something();
 void drive();
 void bringback();
 void bringback2cube();
+void wisch();
 
 //Motors
 #define Motor_Left 0
@@ -35,6 +36,9 @@ void bringback2cube();
 #define Servo_Left_Closed 370
 #define Servo_Right_Open 600
 #define Servo_Right_Closed 1000
+#define Servo_Front_Max 1500
+#define Servo_Front_Min 300
+
 //Button
 #define Button_Up 14
 
@@ -146,6 +150,12 @@ void drive(int delay,int speed_left, int speed_right){
 	freeze(Motor_Left);
 	freeze(Motor_Right);
 	msleep(200);
+}
+
+void wisch() {
+	set_servo_position(Servo_Front, Servo_Front_Max);
+	msleep(800);
+	set_servo_position(Servo_Front, Servo_Front_Min);
 }
 void take_position() {	
 	//zurück 2sec
@@ -400,6 +410,7 @@ void bringback(){
 	//gerade but leicht links so it twerks
 	drive(9000,Drivespeed,Drivespeed);
 	
+	wisch();
 	//vor to calibrate
 	drive(5000,Drivespeed_middle+20,Drivespeed_middle+20);
 	
