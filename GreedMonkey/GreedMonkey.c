@@ -382,7 +382,7 @@ void bringback(){
     while(analog(Sensor_Line_Left) < Sensor_Black){}
     msleep(400);
     while(analog(Sensor_Line_Left) > Sensor_Black){}
-    msleep(155);
+    msleep(135);
     freeze(Motor_Left);
 	
 	//start claw down
