@@ -33,12 +33,11 @@ void wait_for_light_save(int light_port_)
 			cbc_printf(0,4,"Good Calibration!");
 			cbc_printf(0,6,"Diff = %d:  WAITING",l_off_-l_on_);
 			int on = 0;									//New Code to avoid flashlight starting!
-			while(analog10(light_port_)>l_mid_&on){		//New Code to avoid flashlight starting!
+			while(analog10(light_port_)>l_mid_ || !on){		//New Code to avoid flashlight starting!
 				cbc_printf(0,7,"Value = %d; Threshold = %d   ",analog10(light_port_),l_mid_);
-				msleep(25);
-				if(analog10(light_port_)>l_mid_) {		//New Code to avoid flashlight starting!
-					on = 1;								//New Code to avoid flashlight starting!
-				}										//New Code to avoid flashlight starting!
+				msleep(12);
+				on = analog10(light_port_)>l_mid_;		//New Code to avoid flashlight starting!
+				msleep(12);								//New Code to avoid flashlight starting!
 			}
 			cbc_printf(0,6,"Going!                      ");
 			cbc_printf(0,7,"Value = %d; Threshold = %d   ",analog10(light_port_),l_mid_);
